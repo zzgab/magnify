@@ -41,6 +41,8 @@
         var sZoomSrc = oDataAttr['src'] || oOptions['src'] || $anchor.attr('href') || '';
         if (!sZoomSrc) return;
 
+        var useClippedContent = oOptions['useClippedContent'];
+
         var $container,
           $lens,
           nImageWidth,
@@ -144,6 +146,9 @@
                 'left': Math.round(nX-nLensWidth/2) + oImageOffset['left'] + 'px',
                 'background-position': sBgPos
               });
+              if (useClippedContent) {
+                $lens.find(`.${useClippedContent}`).css("top", nRatioY).css("left", nRatioX);
+              }
             }
           };
 
@@ -190,7 +195,11 @@
             if ($image.prev('.magnify-lens').length) {
               $container.children('.magnify-lens').css('background-image', 'url(\'' + sZoomSrc + '\')');
             } else {
-              $image.before('<div class="magnify-lens loading" style="background:url(\'' + sZoomSrc + '\') 0 0 no-repeat"></div>');
+              if (useClippedContent) {
+                $image.before(`<div class="magnify-lens loading" style="overflow: hidden;"><img class="${useClippedContent}" style="position: absolute;" src="${sZoomSrc}"/></div>`);
+              } else {
+                $image.before('<div class="magnify-lens loading" style="background:url(\'' + sZoomSrc + '\') 0 0 no-repeat"></div>');
+              }
             }
             $lens = $container.children('.magnify-lens');
             // Remove the "Loading..." text
